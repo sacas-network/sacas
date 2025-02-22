@@ -1,47 +1,20 @@
 package app
 
 import (
-	"encoding/json"
-	"io"
-	"os"
-
+	"github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/server/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth"
-	"github.com/cosmos/cosmos-sdk/x/bank"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	"github.com/cosmos/cosmos-sdk/x/staking"
-	"github.com/tendermint/tendermint/libs/log"
-	"github.com/tendermint/tendermint/libs/cli"
+	"github.com/cosmos/cosmos-sdk/codec"
 )
 
-var (
-	_ types.App = (*SacasApp)(nil)
-)
-
-type SacasApp struct {
+type App struct {
 	*baseapp.BaseApp
-	cdc         *codec.LegacyAmino
-	appCodec    codec.Codec
-	invCheckPeriod uint
+	cdc *codec.Codec
 }
 
-func NewSacasApp(logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool, home string, invCheckPeriod uint, encodingConfig EncodingConfig, options ...func(*baseapp.BaseApp)) *SacasApp {
-	bApp := baseapp.NewBaseApp("sacas", logger, db, encodingConfig.TxConfig.TxDecoder(), options...)
-	bApp.SetCommitMultiStoreTracer(traceStore)
-	bApp.SetVersion("0.1.0")
-	bApp.SetInterfaceRegistry(encodingConfig.InterfaceRegistry)
-
-	app := &SacasApp{
-		BaseApp:        bApp,
-		invCheckPeriod: invCheckPeriod,
+func NewApp(name string, codec *codec.Codec) *App {
+	return &App{
+		BaseApp: baseapp.NewBaseApp(name, codec),
+		cdc:     codec,
 	}
-
-	return app
 }
-
-func (app *SacasApp) Name() string { return app.BaseApp.Name() }
 
